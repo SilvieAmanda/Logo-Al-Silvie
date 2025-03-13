@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Home, Image } from "lucide-react";
+import Image from "next/image"; // Menggunakan next/image untuk gambar
+import { Home, Image as ImageIcon } from "lucide-react"; // Ganti nama Image dari lucide-react agar tidak bentrok
 import { ThemeToggle } from "./theme-toggle";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
-
 export const Header = () => {
   return (
     <header className="sticky top-0 border-b border-foreground/10 bg-white shadow-md z-30">
@@ -11,8 +11,9 @@ export const Header = () => {
         {/* Riwayat Logo (Kiri) */}
         <SignedIn>
           <Button asChild variant="outline" className="flex items-center gap-2">
-            <Link href="/dashboard" className="px-4 py-2">
-              <Image className="h-5 w-5" />
+            <Link href="/dashboard" className="px-4 py-2 flex items-center gap-2">
+              {/* Gunakan Image dari next/image untuk gambar logo */}
+              <Image src="/logo.png" alt="Riwayat Logo" width={20} height={20} />
               <span>Riwayat Logo</span>
             </Link>
           </Button>

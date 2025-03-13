@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import { FormLogoContext } from "./context/form-logo-context";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import {
   Card,
   CardContent,

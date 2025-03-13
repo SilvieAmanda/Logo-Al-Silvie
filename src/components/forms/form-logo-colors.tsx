@@ -1,9 +1,6 @@
 "use client";
 
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 import { FormLogoContext } from "./context/form-logo-context";
@@ -17,19 +14,7 @@ import {
 } from "../ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-const formSchema = z.object({
-  colors: z.array(z.string()).max(3),
-});
-
-type FormSchemaType = z.infer<typeof formSchema>;
-
-type ColorItem = {
-  color: string;
-  psychology: string;
-  itemStyle: string;
-};
-
-const colors: ColorItem[] = [
+const colors = [
   { color: "Red", psychology: "Energy, Passion, Strength", itemStyle: "text-white bg-red-500" },
   { color: "Orange", psychology: "Creativity, Enthusiasm, Warmth", itemStyle: "text-white bg-orange-500" },
   { color: "Yellow", psychology: "Happiness, Optimism, Clarity", itemStyle: "text-black bg-yellow-400" },
@@ -48,7 +33,7 @@ const colors: ColorItem[] = [
 
 const ColorSelections = ({ selected, onChange }: { selected: string[]; onChange: (selected: string[]) => void }) => {
   const toggleSelection = useCallback(
-    (item: ColorItem) => {
+    (item: { color: string }) => {
       if (selected.includes(item.color)) {
         onChange(selected.filter((v) => v !== item.color));
       } else if (selected.length < 3) {
@@ -87,11 +72,6 @@ const ColorSelections = ({ selected, onChange }: { selected: string[]; onChange:
 export const FormLogoColors = () => {
   const formLogoCtx = useContext(FormLogoContext);
   const [selectedColors, setSelectedColors] = useState<string[]>(formLogoCtx?.values?.colors || []);
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { colors: [] },
-    mode: "onChange",
-  });
 
   function onSubmit(skip = false) {
     formLogoCtx?.setState({

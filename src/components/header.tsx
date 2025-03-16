@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Home } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";

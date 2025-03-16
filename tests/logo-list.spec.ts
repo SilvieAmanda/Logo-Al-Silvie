@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test("Halaman logo menampilkan daftar logo atau state kosong", async ({ page }) => {
   await page.goto("http://localhost:3000"); // Sesuaikan URL lokal atau di Vercel
-
   
 });
 

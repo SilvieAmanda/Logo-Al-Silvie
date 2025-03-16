@@ -12,7 +12,6 @@ export const Header = () => {
         <SignedIn>
           <Button asChild variant="outline">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="Logo" width={20} height={20} />
               <span>Riwayat Logo</span>
             </Link>
           </Button>

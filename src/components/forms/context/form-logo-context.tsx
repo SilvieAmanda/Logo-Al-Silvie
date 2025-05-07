@@ -5,6 +5,7 @@ import { createContext } from "react";
 
 export type FormLogoStateName =
   | "name"
+  | "category"
   | "description"
   | "colors"
   | "style"
@@ -20,6 +21,7 @@ export const FormLogoContext = createContext<FormLogoState>({
   name: "name",
   values: {
     name: "",
+    category:"",
     description: "",
     colors: [],
     style: "",

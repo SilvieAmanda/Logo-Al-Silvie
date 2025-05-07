@@ -14,7 +14,7 @@ import {
 } from "../ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-const colors = [
+const defaultColors = [
   { color: "Red", psychology: "Energy, Passion, Strength", itemStyle: "text-white bg-red-500" },
   { color: "Orange", psychology: "Creativity, Enthusiasm, Warmth", itemStyle: "text-white bg-orange-500" },
   { color: "Yellow", psychology: "Happiness, Optimism, Clarity", itemStyle: "text-black bg-yellow-400" },
@@ -31,13 +31,23 @@ const colors = [
   { color: "Gray", psychology: "Neutrality, Balance, Sophistication", itemStyle: "text-white bg-gray-600" },
 ];
 
-const ColorSelections = ({ selected, onChange }: { selected: string[]; onChange: (selected: string[]) => void }) => {
+const ColorSelections = ({
+  selected,
+  onChange,
+  allColors,
+}: {
+  selected: string[];
+  onChange: (selected: string[]) => void;
+  allColors: { color: string; psychology: string; itemStyle: string }[];
+}) => {
   const toggleSelection = useCallback(
     (item: { color: string }) => {
       if (selected.includes(item.color)) {
         onChange(selected.filter((v) => v !== item.color));
       } else if (selected.length < 3) {
         onChange([...selected, item.color]);
+      } else {
+        alert("You can only select up to 3 colors.");
       }
     },
     [selected, onChange]
@@ -45,13 +55,13 @@ const ColorSelections = ({ selected, onChange }: { selected: string[]; onChange:
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {colors.map((item) => (
+      {allColors.map((item) => (
         <motion.button
           key={item.color}
           className={clsx(
             item.itemStyle,
-            "relative rounded-lg p-4 text-start transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg",
-            selected.includes(item.color) ? "border-4 border-black scale-110 shadow-xl" : "border-2 border-gray-300"
+            "relative rounded-lg p-4 text-start transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl",
+            selected.includes(item.color) ? "border-4 border-black scale-110 shadow-lg" : "border-2 border-gray-300"
           )}
           whileHover={{ scale: 1.05 }}
           onClick={() => toggleSelection(item)}
@@ -72,6 +82,31 @@ const ColorSelections = ({ selected, onChange }: { selected: string[]; onChange:
 export const FormLogoColors = () => {
   const formLogoCtx = useContext(FormLogoContext);
   const [selectedColors, setSelectedColors] = useState<string[]>(formLogoCtx?.values?.colors || []);
+  const [customColors, setCustomColors] = useState<{ color: string; psychology: string; itemStyle: string }[]>([]);
+  const [customColor, setCustomColor] = useState("#000000");
+  const [customColorName, setCustomColorName] = useState("");
+
+  const addCustomColor = () => {
+    if (
+      customColorName.trim() !== "" &&
+      !selectedColors.includes(customColorName) &&
+      selectedColors.length < 3
+    ) {
+      setCustomColors([
+        ...customColors,
+        {
+          color: customColorName,
+          psychology: "Custom Color",
+          itemStyle: `text-white bg-[${customColor}]`,
+        },
+      ]);
+      setSelectedColors([...selectedColors, customColorName]);
+      setCustomColorName("");
+      setCustomColor("#000000");
+    } else {
+      alert("Please enter a valid color name and ensure you select no more than 3 colors.");
+    }
+  };
 
   function onSubmit(skip = false) {
     formLogoCtx?.setState({
@@ -81,11 +116,11 @@ export const FormLogoColors = () => {
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 40 }} 
-      animate={{ opacity: 1, y: 0 }} 
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex justify-center items-center min-h-screen bg-gradient-to-r from-indigo-500 to-purple-500 p-4"
+      className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-500 p-4 flex justify-center items-center"
     >
       <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-lg shadow-2xl border-none rounded-xl p-6">
         <CardHeader>
@@ -95,7 +130,43 @@ export const FormLogoColors = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ColorSelections selected={selectedColors} onChange={setSelectedColors} />
+          <div className="mb-6 grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">Custom Color Name</label>
+              <input
+                type="text"
+                className="w-full border-2 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="e.g. My Blue"
+                value={customColorName}
+                onChange={(e) => setCustomColorName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">Pick a Color</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={customColor}
+                  onChange={(e) => setCustomColor(e.target.value)}
+                  className="w-12 h-12 p-0 border rounded"
+                />
+                <Button
+                  type="button"
+                  onClick={addCustomColor}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  Add Custom Color
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <ColorSelections
+            selected={selectedColors}
+            onChange={setSelectedColors}
+            allColors={[...defaultColors, ...customColors]}
+          />
+
           <div className="flex justify-between mt-6">
             <Button type="button" variant="outline" onClick={() => formLogoCtx?.setState({ name: "description" })}>
               <ArrowLeft /> Previous
@@ -104,7 +175,12 @@ export const FormLogoColors = () => {
               <Button type="button" className="bg-gray-500 hover:bg-gray-600 text-white" onClick={() => onSubmit(true)}>
                 Skip
               </Button>
-              <Button type="button" className="bg-indigo-600 hover:bg-indigo-700 text-white" disabled={selectedColors.length === 0} onClick={() => onSubmit()}>
+              <Button
+                type="button"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                disabled={selectedColors.length === 0}
+                onClick={() => onSubmit()}
+              >
                 Next <ArrowRight />
               </Button>
             </div>

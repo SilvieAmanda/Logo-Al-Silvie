@@ -85,7 +85,7 @@ export const FormLogoDescription = () => {
                     type="button"
                     variant="outline"
                     className="transition duration-300 hover:bg-gray-100 hover:shadow-md flex items-center gap-2 px-6 py-3 rounded-xl text-lg"
-                    onClick={() => formLogoCtx.setState({ name: "name" })}
+                    onClick={() => formLogoCtx.setState({ name: "category" })}
                   >
                     <ArrowLeft />
                     Previous

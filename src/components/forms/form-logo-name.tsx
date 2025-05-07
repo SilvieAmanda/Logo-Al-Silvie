@@ -45,7 +45,7 @@ export const FormLogoName = () => {
 
   function onSubmit(values: FormSchemaType) {
     formLogoCtx.setState({
-      name: "description",
+      name: "category",
       values: { ...formLogoCtx.values, name: values.name },
     });
   }

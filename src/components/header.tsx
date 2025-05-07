@@ -9,11 +9,19 @@ export const Header = () => {
     <header className="sticky top-0 border-b bg-white shadow-md z-30">
       <nav className="flex max-w-7xl w-full mx-auto items-center justify-between h-16 px-6">
         <SignedIn>
-          <Button asChild variant="outline">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <span>Riwayat Logo</span>
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild variant="outline">
+              <Link href="/dashboard" className="flex items-center gap-2">
+                <span>Riwayat Logo</span>
+              </Link>
+            </Button>
+
+            <Button asChild variant="outline" className="border-pink-500 text-pink-600 hover:bg-pink-50">
+              <Link href="/contact" className="flex items-center gap-2">
+                <span>Contact Us</span>
+              </Link>
+            </Button>
+          </div>
         </SignedIn>
 
         <div className="flex-1" />

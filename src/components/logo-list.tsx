@@ -51,7 +51,7 @@ export const LogoList = async () => {
         <>
           <div className="flex justify-between items-center w-full mb-8">
             <h2 className="text-2xl font-bold text-gray-800">Your Logos</h2>
-            <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
+            <Button asChild className="bg-gradient-to-r from-purple-500 to-pink-500 over:bg-green-700 text-white">
               <Link href="/create">Generate New Logo</Link>
             </Button>
           </div>

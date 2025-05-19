@@ -1,5 +1,3 @@
-import next from "@eslint/eslint-config-next";
-
 export default [
   {
     ...next,

@@ -31,7 +31,6 @@ export default function GenerateGif() {
 
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Load gifshot library
   useEffect(() => {
     import('gifshot').then((mod) => {
       const library = mod.default || mod;
@@ -86,13 +85,11 @@ export default function GenerateGif() {
             case 'rotate': {
               const angle = t * 2 * Math.PI;
               ctx.rotate(angle);
-              ctx.drawImage(image, -image.width / 2, -image.height / 2);
               break;
             }
             case 'zoom': {
               const zoomScale = 1 + 0.3 * Math.sin(t * 2 * Math.PI);
               ctx.scale(zoomScale, zoomScale);
-              ctx.drawImage(image, -image.width / 2, -image.height / 2);
               break;
             }
             case 'shine': {
@@ -113,24 +110,20 @@ export default function GenerateGif() {
             case 'bounce': {
               const bounceY = 30 * Math.abs(Math.sin(t * Math.PI * 2));
               ctx.translate(0, bounceY);
-              ctx.drawImage(image, -image.width / 2, -image.height / 2);
               break;
             }
             case 'fade': {
               ctx.globalAlpha = t;
-              ctx.drawImage(image, -image.width / 2, -image.height / 2);
               break;
             }
             case 'swing': {
               const angle = 0.2 * Math.sin(t * Math.PI * 4);
               ctx.rotate(angle);
-              ctx.drawImage(image, -image.width / 2, -image.height / 2);
               break;
             }
             case 'slide': {
               const slideX = (t - 0.5) * canvas.width * 0.8;
               ctx.translate(slideX, 0);
-              ctx.drawImage(image, -image.width / 2, -image.height / 2);
               break;
             }
             case 'zoomRotate': {
@@ -138,12 +131,13 @@ export default function GenerateGif() {
               const angle = t * 2 * Math.PI;
               ctx.rotate(angle);
               ctx.scale(zoomScale, zoomScale);
-              ctx.drawImage(image, -image.width / 2, -image.height / 2);
               break;
             }
           }
 
+          ctx.drawImage(image, -image.width / 2, -image.height / 2);
           ctx.restore();
+
           ctx.save();
           ctx.font = 'bold 16px sans-serif';
           ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
@@ -180,10 +174,6 @@ export default function GenerateGif() {
         interval: interval,
         numFrames: allFrames.length,
         repeat: loopCount,
-        text: 'LogoGen AI',
-        textFont: '20px Arial',
-        textBaseline: 'bottom',
-        textColor: '#fff',
       },
       (obj: any) => {
         if (!obj.error) {
@@ -207,11 +197,11 @@ export default function GenerateGif() {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white overflow-hidden">
+    <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white overflow-auto p-4">
       <div
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="w-full max-w-3xl mx-auto p-6 bg-white shadow-2xl rounded-xl space-y-6"
+        className="w-full max-w-3xl p-6 bg-white shadow-2xl rounded-xl space-y-6"
       >
         <h2 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
           <Sparkles className="text-yellow-500" size={24} />
@@ -245,7 +235,10 @@ export default function GenerateGif() {
 
         {/* Pilih Animasi */}
         <div>
-          <h3 className="font-semibold mb-2">Pilih Animasi:</h3>
+          <h3 className="font-semibold mb-2 flex items-center">
+            Pilih Animasi
+            <AnimationTooltip text="Pilih satu atau lebih animasi yang akan digunakan untuk membuat GIF." />
+          </h3>
           <div className="flex flex-wrap gap-2">
             {ALL_ANIMATIONS.map((anim) => (
               <button
@@ -253,8 +246,8 @@ export default function GenerateGif() {
                 onClick={() => toggleAnimation(anim)}
                 className={`px-3 py-1 rounded-full border text-sm ${
                   selectedAnimations.includes(anim)
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'border-gray-400 text-gray-600 hover:border-blue-600 hover:text-blue-600'
+                    ? 'bg-blue-500 text-white'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 {anim}
@@ -263,35 +256,34 @@ export default function GenerateGif() {
           </div>
         </div>
 
-        {/* Tombol Generate + Reset */}
-        <div className="text-center">
+        {/* Kontrol */}
+        <div className="flex flex-wrap gap-4 items-center justify-between">
           <button
             onClick={generateGIF}
             disabled={isGenerating}
-            className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition disabled:opacity-50"
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
           >
             {isGenerating ? 'Menghasilkan...' : 'Generate GIF'}
           </button>
           <button
             onClick={resetAll}
-            className="ml-3 border border-gray-400 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-100 transition"
+            className="bg-gray-200 px-4 py-2 rounded-md flex items-center gap-2 hover:bg-gray-300"
           >
-            <RefreshCw className="inline-block mr-1" size={16} />
-            Reset
+            <RefreshCw size={16} /> Reset
           </button>
         </div>
 
-        {/* Preview & Download */}
+        {/* Preview GIF */}
         {gifs.length > 0 && (
-          <div className="text-center space-y-3">
-            <h3 className="font-semibold">Hasil GIF:</h3>
+          <div className="text-center space-y-4">
+            <h4 className="font-semibold">Hasil GIF:</h4>
             {gifs.map((gif, i) => (
               <div key={i}>
-                <img src={gif.url} alt={`gif-${i}`} className="mx-auto w-[300px] rounded-md" />
+                <img src={gif.url} alt={`GIF ${i}`} className="mx-auto" />
                 <a
                   href={gif.url}
-                  download={`logogen_${gif.type}.gif`}
-                  className="inline-flex items-center gap-1 mt-2 text-blue-600 hover:underline"
+                  download={`animated-logo-${i + 1}.gif`}
+                  className="mt-2 inline-flex items-center gap-1 text-blue-600 hover:underline"
                 >
                   <Download size={16} />
                   Download GIF

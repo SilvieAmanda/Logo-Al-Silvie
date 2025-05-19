@@ -2,7 +2,7 @@
 
 import { UsersImagesSelect } from "@/db/schema";
 import { getMyLogo } from "@/services/get-my-logo";
-import { Download, ImagePlus } from "lucide-react";
+import { Download, ImagePlus, Eye } from "lucide-react";
 import Image from "next/image";
 import { FormLandingPage } from "./forms/form-landing-page";
 import { Button } from "./ui/button";
@@ -10,35 +10,54 @@ import Link from "next/link";
 
 const LogoItem = ({ logo }: { logo: UsersImagesSelect }) => {
   return (
-    <div className="flex flex-col items-center gap-3 p-4 bg-white rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl">
-      <Image
-        src={logo.image}
-        width={224}
-        height={224}
-        alt={logo.name}
-        className="rounded-lg object-cover"
-      />
-      <h3 className="font-semibold text-lg text-gray-800">{logo.name}</h3>
-      <p className="text-center text-sm text-gray-600 line-clamp-2">{logo.description}</p>
-      <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-        <a href={logo.image} download={`${logo.name}.png`} className="flex items-center gap-2">
-          <Download className="size-5" /> Download
-        </a>
-      </Button>
+    <div className="relative group bg-white rounded-2xl shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer">
+      <div className="relative h-56 w-full">
+        <Image
+          src={logo.image}
+          alt={logo.name}
+          fill
+          className="object-cover rounded-t-2xl"
+          sizes="(max-width: 768px) 100vw, 33vw"
+          priority={false}
+        />
+        <div className="absolute top-3 right-3 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full opacity-90">
+          Logo
+        </div>
+      </div>
+
+      <div className="p-5 flex flex-col gap-2">
+        <h3 className="text-xl font-semibold text-gray-900 truncate">{logo.name}</h3>
+        <p className="text-gray-600 text-sm line-clamp-3">{logo.description || "No description available."}</p>
+        <div className="mt-4 flex justify-between items-center gap-3">
+          <Button asChild variant="outline" className="flex-1 flex justify-center gap-2">
+            <a href={logo.image} download={`${logo.name}.png`} className="flex items-center">
+              <Download className="w-5 h-5" /> Download
+            </a>
+          </Button>
+          <Link
+            href={`/logo/${logo.id}`}
+            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
+            aria-label={`View details for ${logo.name}`}
+          >
+            <Eye className="w-5 h-5" />
+            Preview
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
 
 const EmptyState = () => {
   return (
-    <div className="flex flex-col items-center justify-center mx-auto gap-6 py-24 text-center">
-      <h2 className="font-bold text-3xl text-gray-800">You don&apos;t have any generated logo</h2>
-      <ImagePlus className="size-24 sm:size-28 lg:size-40 text-gray-400" />
-      <div className="space-y-3">
-        <p className="text-gray-600">Generate your first logo now!</p>
-        <FormLandingPage />
-      </div>
-    </div>
+    <section className="flex flex-col items-center justify-center py-20 gap-8 text-center max-w-xl mx-auto">
+      <ImagePlus className="w-24 h-24 text-gray-300" />
+      <h2 className="text-3xl font-bold text-gray-800">No Logos Found</h2>
+      <p className="text-gray-600 max-w-md">
+        You haven&apos;t generated any logos yet. Start by creating your first logo below!
+      </p>
+      <FormLandingPage />
+    </section>
   );
 };
 
@@ -46,24 +65,25 @@ export const LogoList = async () => {
   const logos = await getMyLogo();
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
-      {logos.length !== 0 ? (
+    <main className="max-w-7xl mx-auto px-6 py-12">
+      {logos.length > 0 ? (
         <>
-          <div className="flex justify-between items-center w-full mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Your Logos</h2>
-            <Button asChild className="bg-gradient-to-r from-purple-500 to-pink-500 over:bg-green-700 text-white">
+          <header className="flex justify-between items-center mb-12">
+            <h1 className="text-3xl font-extrabold text-gray-900">Your Logo Collection</h1>
+            <Button asChild className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white shadow-lg hover:shadow-xl">
               <Link href="/create">Generate New Logo</Link>
             </Button>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
+          </header>
+
+          <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
             {logos.map((logo) => (
-              <LogoItem logo={logo} key={logo.id} />
+              <LogoItem key={logo.id} logo={logo} />
             ))}
-          </div>
+          </section>
         </>
       ) : (
         <EmptyState />
       )}
-    </div>
+    </main>
   );
 };

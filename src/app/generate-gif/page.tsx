@@ -31,8 +31,12 @@ export default function GenerateGif() {
 
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Load gifshot library
   useEffect(() => {
-    import('gifshot').then((mod) => setGifshot(mod));
+    import('gifshot').then((mod) => {
+      const library = mod.default || mod;
+      setGifshot(library);
+    });
   }, []);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -277,21 +281,25 @@ export default function GenerateGif() {
           </button>
         </div>
 
-        {/* Hasil GIF */}
-        {gifs.map((gif, idx) => (
-          <div key={idx} className="text-center">
-            <h4 className="font-semibold">Hasil GIF</h4>
-            <img src={gif.url} alt={`GIF ${gif.type}`} className="mx-auto w-48 h-48" />
-            <a
-              href={gif.url}
-              download={`logo-${gif.type}.gif`}
-              className="mt-2 inline-block text-blue-600 hover:underline"
-            >
-              <Download className="inline-block mr-1" size={16} />
-              Download GIF
-            </a>
+        {/* Preview & Download */}
+        {gifs.length > 0 && (
+          <div className="text-center space-y-3">
+            <h3 className="font-semibold">Hasil GIF:</h3>
+            {gifs.map((gif, i) => (
+              <div key={i}>
+                <img src={gif.url} alt={`gif-${i}`} className="mx-auto w-[300px] rounded-md" />
+                <a
+                  href={gif.url}
+                  download={`logogen_${gif.type}.gif`}
+                  className="inline-flex items-center gap-1 mt-2 text-blue-600 hover:underline"
+                >
+                  <Download size={16} />
+                  Download GIF
+                </a>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
